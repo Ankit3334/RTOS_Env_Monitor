@@ -318,21 +318,14 @@ void Sensor_Task(void *argument){
             if (simulated_i2c_status == HAL_OK) {
 
                 float drift = 3.0f * sinf((float)tick * 0.05f);
-
-
                 float noise = gaussian_noise(0.0f, 0.5f);
-
                 myData.temperature = base_temp + drift + noise;
-
-
                 myData.humidity = 65.0f - (drift * 2.0f) + gaussian_noise(0.0f, 1.0f);
-
 
                 if (myData.humidity < 30.0f) myData.humidity = 30.0f;
                 if (myData.humidity > 95.0f) myData.humidity = 95.0f;
 
                 myData.timestamp = osKernelGetTickCount();
-
                 osMessageQueuePut(sensorQueueHandle, &myData, 0, 100);
 
                 HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);

@@ -1777,14 +1777,11 @@ void Sensor_Task(void *argument){
  800126a:	eeb0 7a08 	vmov.f32	s14, #8	@ 0x40400000  3.0
  800126e:	ee67 7a87 	vmul.f32	s15, s15, s14
  8001272:	edc7 7a06 	vstr	s15, [r7, #24]
-
-
                 float noise = gaussian_noise(0.0f, 0.5f);
  8001276:	eef6 0a00 	vmov.f32	s1, #96	@ 0x3f000000  0.5
  800127a:	ed9f 0a41 	vldr	s0, [pc, #260]	@ 8001380 <Sensor_Task+0x188>
  800127e:	f7ff ff27 	bl	80010d0 <gaussian_noise>
  8001282:	ed87 0a05 	vstr	s0, [r7, #20]
-
                 myData.temperature = base_temp + drift + noise;
  8001286:	ed97 7a09 	vldr	s14, [r7, #36]	@ 0x24
  800128a:	edd7 7a06 	vldr	s15, [r7, #24]
@@ -1792,8 +1789,6 @@ void Sensor_Task(void *argument){
  8001292:	edd7 7a05 	vldr	s15, [r7, #20]
  8001296:	ee77 7a27 	vadd.f32	s15, s14, s15
  800129a:	edc7 7a02 	vstr	s15, [r7, #8]
-
-
                 myData.humidity = 65.0f - (drift * 2.0f) + gaussian_noise(0.0f, 1.0f);
  800129e:	edd7 7a06 	vldr	s15, [r7, #24]
  80012a2:	ee77 7aa7 	vadd.f32	s15, s15, s15
@@ -1805,7 +1800,6 @@ void Sensor_Task(void *argument){
  80012ba:	eef0 7a40 	vmov.f32	s15, s0
  80012be:	ee78 7a27 	vadd.f32	s15, s16, s15
  80012c2:	edc7 7a03 	vstr	s15, [r7, #12]
-
 
                 if (myData.humidity < 30.0f) myData.humidity = 30.0f;
  80012c6:	edd7 7a03 	vldr	s15, [r7, #12]
@@ -1828,7 +1822,6 @@ void Sensor_Task(void *argument){
  80012f2:	f001 fe8f 	bl	8003014 <osKernelGetTickCount>
  80012f6:	4603      	mov	r3, r0
  80012f8:	613b      	str	r3, [r7, #16]
-
                 osMessageQueuePut(sensorQueueHandle, &myData, 0, 100);
  80012fa:	4b26      	ldr	r3, [pc, #152]	@ (8001394 <Sensor_Task+0x19c>)
  80012fc:	6818      	ldr	r0, [r3, #0]

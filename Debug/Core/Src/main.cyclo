@@ -4,9 +4,9 @@
 ../Core/Src/main.c:253:13:MX_GPIO_Init	1
 ../Core/Src/main.c:287:7:gaussian_noise	2
 ../Core/Src/main.c:303:6:Sensor_Task	7
-../Core/Src/main.c:364:6:Comms_Task	1
-../Core/Src/main.c:370:6:Processing_Task	3
-../Core/Src/main.c:388:6:Display_Task	1
-../Core/Src/main.c:404:6:StartDefaultTask	1
-../Core/Src/main.c:423:6:HAL_TIM_PeriodElapsedCallback	2
-../Core/Src/main.c:441:6:Error_Handler	1
+../Core/Src/main.c:357:6:Comms_Task	1
+../Core/Src/main.c:363:6:Processing_Task	3
+../Core/Src/main.c:381:6:Display_Task	1
+../Core/Src/main.c:397:6:StartDefaultTask	1
+../Core/Src/main.c:416:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/main.c:434:6:Error_Handler	1
