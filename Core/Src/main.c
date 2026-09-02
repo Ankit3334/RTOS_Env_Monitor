@@ -280,38 +280,85 @@ static void MX_GPIO_Init(void)
 
 extern I2C_HandleTypeDef hi2c1;
 
+
+
+#include <math.h>
+#include <stdlib.h>
+float gaussian_noise(float mean, float stddev) {
+
+    static float u1 = 0, u2 = 0;
+    static int phase = 0;
+
+    if (phase == 0) {
+        u1 = (float)rand() / RAND_MAX;
+        u2 = (float)rand() / RAND_MAX;
+        phase = 1;
+        return mean + stddev * sqrtf(-2.0f * logf(u1)) * cosf(2.0f * 3.14159f * u2);
+    } else {
+        phase = 0;
+        return mean + stddev * sqrtf(-2.0f * logf(u1)) * sinf(2.0f * 3.14159f * u2);
+    }
+}
+
 void Sensor_Task(void *argument){
-	SensorData_t myData;
-	uint32_t tick = 0;
+    SensorData_t myData;
+    uint32_t tick = 0;
 
-	for(;;){
-		if (osMutexAcquire(i2cMutexHandle, osWaitForever) == osOK) {
+    float base_temp = 22.0f;
 
+    const int FAILURE_RATE = 20;
 
-			HAL_StatusTypeDef sensor_status = HAL_I2C_IsDeviceReady(&hi2c1, 0xE0, 3, 100);
+    for(;;){
 
-			if (sensor_status == HAL_OK) {
-
-				myData.temperature = 25.5f;
-			} else {
-
-				myData.temperature = 25.0f + (tick % 5);
-			}
-
-			myData.humidity = 60.0f;
-			myData.timestamp = osKernelGetTickCount();
+        if (osMutexAcquire(i2cMutexHandle, osWaitForever) == osOK) {
 
 
-			osMutexRelease(i2cMutexHandle);
-		}
+            int simulated_i2c_status = (rand() % FAILURE_RATE == 0) ? HAL_TIMEOUT : HAL_OK;
+
+            if (simulated_i2c_status == HAL_OK) {
+
+                float drift = 3.0f * sinf((float)tick * 0.05f);
 
 
-		osMessageQueuePut(sensorQueueHandle, &myData, 0, 100);
+                float noise = gaussian_noise(0.0f, 0.5f);
 
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-		tick++;
-		osDelay(500);
-	}
+                myData.temperature = base_temp + drift + noise;
+
+
+                myData.humidity = 65.0f - (drift * 2.0f) + gaussian_noise(0.0f, 1.0f);
+
+
+                if (myData.humidity < 30.0f) myData.humidity = 30.0f;
+                if (myData.humidity > 95.0f) myData.humidity = 95.0f;
+
+                myData.timestamp = osKernelGetTickCount();
+
+                osMessageQueuePut(sensorQueueHandle, &myData, 0, 100);
+
+                HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+            } else {
+
+                myData.temperature = 25.0f;
+                myData.humidity = 50.0f;
+                myData.timestamp = osKernelGetTickCount();
+
+
+                osMessageQueuePut(sensorQueueHandle, &myData, 0, 100);
+
+                for(int i = 0; i < 5; i++) {
+                    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+                    osDelay(100);
+                }
+            }
+
+
+            osMutexRelease(i2cMutexHandle);
+        }
+
+        tick++;
+        osDelay(500);
+    }
 }
 
 void Comms_Task(void *argument){

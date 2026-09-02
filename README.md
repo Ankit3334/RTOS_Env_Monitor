@@ -1,10 +1,10 @@
 # RTOS Environmental Monitor - STM32F411
 
-Multi-threaded environmental monitoring firmware built on FreeRTOS for the STM32F411 Black Pill.
+Multi threaded environmental monitoring firmware built on FreeRTOS for the STM32F411 Black Pill.
 
 ## Features
-- 4 concurrent RTOS tasks with priority-based scheduling
-- Safe Inter-Task Communication using FreeRTOS Queues
+- 4 concurrent RTOS tasks with priority based scheduling
+- Safe Inter Task Communication using FreeRTOS Queues
 - Shared I2C bus protection using Mutexes
 - Stack overflow protection hooks
 
